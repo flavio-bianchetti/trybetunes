@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import SelectRoute from './component/SelectRoute';
+import SelectRoute from './pages/SelectRoute';
 
 class App extends React.Component {
   render() {
