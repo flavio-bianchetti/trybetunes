@@ -6,6 +6,13 @@ const DataInput = [
     type: 'text',
     placeholder: 'Nome',
   },
+  {
+    dataTestId: 'search-artist-input',
+    name: 'nameSearchArtist',
+    className: 'input input-search-artist',
+    type: 'text',
+    placeholder: 'Nome do artista',
+  },
 ];
 
 export default DataInput;
