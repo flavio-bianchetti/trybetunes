@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Route } from 'react-router-dom';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import Loading from './component/Loading';
 import { createUser } from './services/userAPI';
 import Login from './pages/Login';
@@ -71,30 +71,33 @@ class App extends React.Component {
       <BrowserRouter>
         <p>TrybeTunes</p>
         <div>
-          { isLoading && <Loading /> }
-          {
-            !isLoading
-            && <Route
-              path="/"
-              render={
-                (() => (
-                  <Login
-                    loginName={ loginName }
-                    isDisabled={ isDisabled }
-                    isLoggedIn={ isLoggedIn }
-                    handleChange={ this.handleChange }
-                    handleSubmit={ this.handleSubmit }
-                  />
-                ))
-              }
-            />
-          }
-          <Route path="/search" component={ Search } />
-          <Route path="/album/:id" component={ Album } />
-          <Route path="/favorites" component={ Favorites } />
-          <Route path="/profile" component={ Profile } />
-          <Route path="/profile/edit" component={ ProfileEdit } />
-          <Route path="*" component={ NotFound } />
+          <Switch>
+            { isLoading && <Loading /> }
+            {
+              !isLoading
+              && <Route
+                exact
+                path="/"
+                render={
+                  (() => (
+                    <Login
+                      loginName={ loginName }
+                      isDisabled={ isDisabled }
+                      isLoggedIn={ isLoggedIn }
+                      handleChange={ this.handleChange }
+                      handleSubmit={ this.handleSubmit }
+                    />
+                  ))
+                }
+              />
+            }
+            <Route exact path="/search" component={ Search } />
+            <Route exact path="/album/:id" component={ Album } />
+            <Route exact path="/favorites" component={ Favorites } />
+            <Route exact path="/profile" component={ Profile } />
+            <Route exact path="/profile/edit" component={ ProfileEdit } />
+            <Route path="*" component={ NotFound } />
+          </Switch>
         </div>
       </BrowserRouter>
     );
