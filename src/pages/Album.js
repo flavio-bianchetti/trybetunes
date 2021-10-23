@@ -1,8 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import musicsAPI from '../services/musicsAPI';
+import { getFavoriteSongs, addSong } from '../services/favoriteSongsAPI';
 import Header from '../component/Header';
-import RenderAlbumMusics from '../component/RenderAlbumMusics';
+import Loading from '../component/Loading';
+import MusicCard from '../component/MusicCard';
 
 class Album extends React.Component {
   constructor() {
@@ -12,12 +14,37 @@ class Album extends React.Component {
       collectionName: '',
       artistName: '',
       listOfAlbumMusics: [],
+      listFavoriteSongs: [],
+      isFavorite: [],
+      isLoading: false,
     };
+
+    this.handleChange = this.handleChange.bind(this);
     this.getAlbumMusicsList = this.getAlbumMusicsList.bind(this);
+    this.getFavoriteList = this.getFavoriteList.bind(this);
   }
 
   componentDidMount() {
     this.getAlbumMusicsList();
+    this.getFavoriteList();
+  }
+
+  async handleChange(event) {
+    event.preventDefault();
+    const { listOfAlbumMusics } = this.state;
+    const { id, checked } = event.target;
+    const { isFavorite } = this.state;
+    const value = isFavorite;
+    this.setState({
+      isLoading: true,
+    }, () => {
+      addSong(listOfAlbumMusics[id]);
+      value[id] = checked;
+      this.setState({
+        isLoading: false,
+        isFavorite: value,
+      });
+    });
   }
 
   async getAlbumMusicsList() {
@@ -33,23 +60,58 @@ class Album extends React.Component {
       });
   }
 
+  async getFavoriteList() {
+    await getFavoriteSongs()
+      .then((response) => {
+        this.setState({
+          listFavoriteSongs: response,
+        }, this.arrayIsFavorite);
+      });
+  }
+
+  arrayIsFavorite() {
+    const {
+      listOfAlbumMusics,
+      listFavoriteSongs,
+    } = this.state;
+    const value = [];
+    listOfAlbumMusics
+      .forEach((music) => value.push(listFavoriteSongs
+        .some((song) => music.trackName === song.trackName)));
+    this.setState({
+      isFavorite: value,
+    });
+  }
+
   render() {
     const {
       artworkUrl100,
       collectionName,
       artistName,
       listOfAlbumMusics,
+      isLoading,
+      isFavorite,
     } = this.state;
     return (
-      <div data-testid="page-album">
-        <Header />
-        <RenderAlbumMusics
-          artworkUrl100={ artworkUrl100 }
-          collectionName={ collectionName }
-          artistName={ artistName }
-          listOfAlbumMusics={ listOfAlbumMusics }
-        />
-      </div>
+      <section>
+        { isLoading && <Loading />}
+        {
+          !isLoading
+          && (
+            <div data-testid="page-album">
+              <Header />
+              <MusicCard
+                artworkUrl100={ artworkUrl100 }
+                collectionName={ collectionName }
+                artistName={ artistName }
+                listOfAlbumMusics={ listOfAlbumMusics }
+                handleChange={ this.handleChange }
+                isFavorite={ isFavorite }
+              />
+            </div>
+          )
+        }
+      </section>
     );
   }
 }
@@ -59,6 +121,8 @@ Album.propTypes = {
   collectionName: PropTypes.string,
   artistName: PropTypes.string,
   listOfAlbumMusics: PropTypes.array,
+  listFavoriteSongs: PropTypes.array,
+  isFavorite: PropTypes.array,
   match: PropTypes.object,
 }.isRequired;
 
