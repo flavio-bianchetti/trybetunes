@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import musicsAPI from '../services/musicsAPI';
-import { getFavoriteSongs, addSong } from '../services/favoriteSongsAPI';
+import { getFavoriteSongs, addSong, removeSong } from '../services/favoriteSongsAPI';
 import Header from '../component/Header';
 import Loading from '../component/Loading';
 import MusicCard from '../component/MusicCard';
@@ -38,7 +38,11 @@ class Album extends React.Component {
     this.setState({
       isLoading: true,
     }, () => {
-      addSong(listOfAlbumMusics[id]);
+      if (checked) {
+        addSong(listOfAlbumMusics[id]);
+      } else {
+        removeSong(listOfAlbumMusics[id]);
+      }
       value[id] = checked;
       this.setState({
         isLoading: false,
