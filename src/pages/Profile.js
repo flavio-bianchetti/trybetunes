@@ -14,6 +14,8 @@ class Profile extends React.Component {
       email: '',
       description: '',
     };
+
+    this.getUserInfo = this.getUserInfo.bind(this);
   }
 
   componentDidMount() {
